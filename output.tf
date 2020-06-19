@@ -29,3 +29,13 @@ output "allow_ports" {
 output "instance_tags" {
   value = var.instance_tags
 }
+
+
+
+output "strange" {
+  value = merge(var.instance_tags, { Name = "${var.instance_type}Web Server IP" })
+}
+
+output "strange2" {
+  value = local.ins_reg
+}

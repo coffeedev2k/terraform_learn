@@ -12,9 +12,7 @@ data "aws_ami" "latest_ubuntu" {
 
 resource "aws_eip" "my_static_ip" {
   instance = aws_instance.my_webserver.id
-  tags = {
-    Name = "Web Server IP"
-  }
+  tags     = merge(var.instance_tags, { Name = "${var.instance_type} Web Server IP" })
 }
 
 resource "aws_instance" "my_webserver" {
@@ -29,5 +27,20 @@ resource "aws_instance" "my_webserver" {
   tags = var.instance_tags
   lifecycle {
     create_before_destroy = true
+  }
+}
+
+locals {
+  ins_reg = "${var.region} - ${var.instance_type}"
+}
+
+locals {
+  public_ip = aws_eip.my_static_ip.public_ip
+}
+
+
+resource "null_resource" "create_hosts_file" {
+  provisioner "local-exec" {
+    command = "echo ${var.region} > hosts"
   }
 }
