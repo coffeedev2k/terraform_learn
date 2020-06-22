@@ -1,4 +1,4 @@
-
+/*
 output "aws_instance_my_webserver" {
   value = aws_eip.my_static_ip.id
 }
@@ -20,6 +20,8 @@ output "data_aws_caller_identity" {
 output "aws_instance_my_webserver_instance_type" {
   value = aws_instance.my_webserver.instance_type
 }
+
+*/
 output "region" {
   value = var.region
 }
@@ -28,14 +30,4 @@ output "allow_ports" {
 }
 output "instance_tags" {
   value = var.instance_tags
-}
-
-
-
-output "strange" {
-  value = merge(var.instance_tags, { Name = "${var.instance_type}Web Server IP" })
-}
-
-output "strange2" {
-  value = local.ins_reg
 }

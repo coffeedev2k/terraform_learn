@@ -2,10 +2,19 @@ variable "region" {
   default = "eu-central-1"
 }
 
-variable "instance_type" {
+variable "instance_testing" {
   default = "t2.micro"
 }
 
+variable "instance_production" {
+  default = "l2.large"
+}
+variable "instance_count_testing" {
+  default = "10"
+}
+variable "instance_count_production" {
+  default = "20"
+}
 
 variable "allow_ports" {
   type    = list
@@ -18,4 +27,8 @@ variable "instance_tags" {
     Name     = "Web Server Build by Terraform"
     tagvalue = "tagkey"
   }
+}
+
+variable "environment" {
+  default = "testing"
 }

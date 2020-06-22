@@ -11,34 +11,34 @@ data "aws_ami" "latest_ubuntu" {
 }
 
 resource "aws_eip" "my_static_ip" {
-  instance = aws_instance.my_webserver.id
-  tags     = merge(var.instance_tags, { Name = "${var.instance_type} Web Server IP" })
+  count    = var.environment == "production" ? var.instance_count_production : var.instance_count_testing
+  instance = aws_instance.my_webserver[count.index].id
+  tags     = merge(var.instance_tags, { Name = "${var.environment} -  Web Server IP" })
 }
 
 resource "aws_instance" "my_webserver" {
+  count                  = var.environment == "production" ? var.instance_count_production : var.instance_count_testing
   ami                    = data.aws_ami.latest_ubuntu.id
-  instance_type          = var.instance_type
+  instance_type          = var.environment == "production" ? var.instance_production : var.instance_testing
   vpc_security_group_ids = [aws_security_group.my_webserver.id]
   user_data = templatefile("user_data.sh.tpl", {
     f_name   = "Alexey",
     l_name   = "Tarasov",
     packages = ["mc", "python-minimal", "openssh-server"]
   })
-  tags = var.instance_tags
+  tags = merge(var.instance_tags, { Name = "${var.environment} -  Web Server IP" })
   lifecycle {
     create_before_destroy = true
   }
 }
 
-locals {
-  ins_reg = "${var.region} - ${var.instance_type}"
-}
+/*
 
 locals {
-  public_ip = aws_eip.my_static_ip.public_ip
+  public_ip = aws_eip.my_static_ip[count.index]
 }
 
-
+*/
 resource "null_resource" "create_hosts_file" {
   provisioner "local-exec" {
     command = "echo ${var.region} > hosts"
