@@ -4,7 +4,8 @@ resource "aws_security_group" "my_webserver" {
 
 
   dynamic "ingress" {
-    for_each = var.allow_ports
+    #  for_each = var.allow_ports
+    for_each = lookup(var.instance_allow_ports, var.environment)
     content {
       from_port   = ingress.value
       to_port     = ingress.value

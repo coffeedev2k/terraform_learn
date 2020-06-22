@@ -11,28 +11,32 @@ data "aws_ami" "latest_ubuntu" {
 }
 
 resource "aws_eip" "my_static_ip" {
-  count    = var.environment == "production" ? var.instance_count_production : var.instance_count_testing
+  count    = lookup(var.instance_count, var.environment)
   instance = aws_instance.my_webserver[count.index].id
-  tags     = merge(var.instance_tags, { Name = "${var.environment} -  Web Server IP" })
+  tags     = merge(var.instance_tags, { Name = "${var.environment} -  server" })
 }
 
 resource "aws_instance" "my_webserver" {
-  count                  = var.environment == "production" ? lookup(var.instance_count, var.environment) : lookup(var.instance_count, var.environment)
+  /*
+  count                  = var.environment == "production" ? lookup(var.instance_count, "production") : lookup(var.instance_count, "testing")
+  */
+
+  count                  = lookup(var.instance_count, var.environment)
   ami                    = data.aws_ami.latest_ubuntu.id
-  instance_type          = var.environment == "production" ? var.instance_production : var.instance_testing
+  instance_type          = lookup(var.instance_size, var.environment)
   vpc_security_group_ids = [aws_security_group.my_webserver.id]
   user_data = templatefile("user_data.sh.tpl", {
     f_name   = "Alexey",
     l_name   = "Tarasov",
     packages = ["mc", "python-minimal", "openssh-server"]
   })
-  tags = merge(var.instance_tags, { Name = "${var.environment} -  Web Server IP" })
+  tags = merge(var.instance_tags, { Name = "${var.environment} -  server" })
   lifecycle {
     create_before_destroy = true
   }
 }
 
-
+/*
 
 locals {
   public_ip = [aws_eip.my_static_ip.*.public_ip]
@@ -44,3 +48,4 @@ resource "null_resource" "create_hosts_file" {
     command = "echo ${var.region} > hosts"
   }
 }
+*/
