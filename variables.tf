@@ -10,7 +10,7 @@ variable "instance_production" {
   default = "l2.large"
 }
 variable "instance_count_testing" {
-  default = "10"
+  default = "2"
 }
 variable "instance_count_production" {
   default = "20"

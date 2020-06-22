@@ -35,7 +35,7 @@ resource "aws_instance" "my_webserver" {
 /*
 
 locals {
-  public_ip = aws_eip.my_static_ip[count.index]
+  public_ip = aws_eip.my_static_ip[count.index].public_ip
 }
 
 */
