@@ -17,7 +17,7 @@ resource "aws_eip" "my_static_ip" {
 }
 
 resource "aws_instance" "my_webserver" {
-  count                  = var.environment == "production" ? var.instance_count_production : var.instance_count_testing
+  count                  = var.environment == "production" ? lookup(var.instance_count, var.environment) : lookup(var.instance_count, var.environment)
   ami                    = data.aws_ami.latest_ubuntu.id
   instance_type          = var.environment == "production" ? var.instance_production : var.instance_testing
   vpc_security_group_ids = [aws_security_group.my_webserver.id]
@@ -32,13 +32,13 @@ resource "aws_instance" "my_webserver" {
   }
 }
 
-/*
+
 
 locals {
-  public_ip = aws_eip.my_static_ip[count.index].public_ip
+  public_ip = [aws_eip.my_static_ip.*.public_ip]
 }
 
-*/
+
 resource "null_resource" "create_hosts_file" {
   provisioner "local-exec" {
     command = "echo ${var.region} > hosts"

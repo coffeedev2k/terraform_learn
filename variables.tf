@@ -16,6 +16,18 @@ variable "instance_count_production" {
   default = "20"
 }
 
+variable "instance_count" {
+  type = map
+  default = {
+    testing    = 2
+    production = 20
+  }
+}
+
+
+
+
+
 variable "allow_ports" {
   type    = list
   default = ["22", "80", "443", "8080"]
